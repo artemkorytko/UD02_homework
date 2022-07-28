@@ -58,7 +58,6 @@ crashlytics-build.properties
 # JetBrains Rider
 Assets/Plugins/Editor/JetBrains*
 .idea/
-.vs/
 
 # ============ #
 # OS generated #
