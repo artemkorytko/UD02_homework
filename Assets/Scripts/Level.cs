@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -8,18 +7,19 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 
 
+[RequireComponent(typeof(FightPoint))]
 public class Level : MonoBehaviour
 {
-    [SerializeField] List<GameObject> _vikings;
-    [SerializeField] List<FightPoint> _fightPoints;
-    [SerializeField] List<GameObject> _churchPoints;
-    [SerializeField] GameObject _vikingSpawn;
-    [SerializeField] GameObject _gates;
+    [SerializeField] List<GameObject> vikings;
+    [SerializeField] List<FightPoint> fightPoints;
+    [SerializeField] List<GameObject> churchPoints;
+    [SerializeField] GameObject vikingSpawn;
+    [SerializeField] GameObject gates;
     private List<GameObject> _currentVikings = new List<GameObject>();
     private Viking _currentViking;
     private Queue<GameObject> _currentVikingsQueue = new Queue<GameObject>();
-    private Stack<Viking> _currentVikingsStack = new Stack<Viking>();
-    private Dictionary<String, string> _rewardedVikings = new Dictionary<String, string>();
+    private readonly Stack<Viking> _currentVikingsStack = new Stack<Viking>();
+    private readonly Dictionary<String, string> _rewardedVikings = new Dictionary<String, string>();
     private FightPoint _currentFightPoint;
     private Coroutine _corut;
     private bool _corutGatesStarted = true;
@@ -42,7 +42,7 @@ public class Level : MonoBehaviour
     {
         if (_currentViking.OnFightPoint)
         {
-            if (_fightPoints.Count > 0)
+            if (fightPoints.Count > 0)
             {
                 SpawnOneVikingAndMatchPoint();
                 _currentViking.MoveToPoint(_currentFightPoint.gameObject.transform.position);
@@ -102,84 +102,40 @@ public class Level : MonoBehaviour
         return indicator;
     }
 
-    int vikingTitleIndex = 0;
+    private int _vikingTitleIndex = 0;
     public void SpawnOneVikingAndMatchPoint()
     {
-        int _vikingIndex = UnityEngine.Random.Range(0, _vikings.Count);
-        _currentViking = Instantiate(_vikings[_vikingIndex]).GetComponentInChildren<Viking>();
-        switch (_vikingIndex)
-        {
-            case 0:
-                {
-                    _currentViking.Name = "Brown viking";
-                    break;
-                }
-            case 1:
-                {
-                    _currentViking.Name = "Black viking";
-                    break ;
-                }
-            case 2:
-                {
-                    _currentViking.Name = "Green viking";
-                    break;
-                }
-        }
+        int _vikingIndex = UnityEngine.Random.Range(0, vikings.Count);
+        _currentViking = Instantiate(vikings[_vikingIndex]).GetComponentInChildren<Viking>();
         _currentVikings.Add(_currentViking.gameObject);
-        _currentViking.transform.parent.position = _vikingSpawn.transform.position;
-        int _fightPointIndex = UnityEngine.Random.Range(0, _fightPoints.Count);
-        _currentFightPoint = _fightPoints[_fightPointIndex];
-        _fightPoints.Remove(_currentFightPoint);
+        _currentViking.transform.parent.position = vikingSpawn.transform.position;
+        int _fightPointIndex = UnityEngine.Random.Range(0, fightPoints.Count);
+        _currentFightPoint = fightPoints[_fightPointIndex];
+        fightPoints.Remove(_currentFightPoint);
     }
 
 
     private async void  MoveVikingsToChurchPoints()
     {
-        _churchPoints = (from churchPoint in _churchPoints orderby Vector3.Distance(churchPoint.transform.position, _gates.transform.position) descending select churchPoint).ToList();
+        churchPoints = (from churchPoint in churchPoints orderby Vector3.Distance(churchPoint.transform.position, gates.transform.position) descending select churchPoint).ToList();
         for (int i = 0; i < _currentVikings.Count; i++)
         {
-            switch (i)
-            {
-                case 0:
-                    {
-                        _churchPoints[i].GetComponent<ChurchPoint>().Name = "Blue treasure";
-                        break;
-                    }
-                case 1:
-                    {
-                        _churchPoints[i].GetComponent<ChurchPoint>().Name = "Green treasure";
-                        break;
-                    }
-                case 2:
-                    {
-                        _churchPoints[i].GetComponent<ChurchPoint>().Name = "Yellow treasure";
-                        break;
-                    }
-                case 3:
-                    {
-                        _churchPoints[i].GetComponent<ChurchPoint>().Name = "Orange treasure";
-                        break;
-                    }
-                case 4:
-                    {
-                        _churchPoints[i].GetComponent<ChurchPoint>().Name = "Red treasure";
-                        break;
-                    }
-            }
             _currentViking = _currentVikings[i].GetComponent<Viking>();
-            _currentViking.MoveToPoint(_churchPoints[i].transform.position);
+            _currentViking.MoveToPoint(churchPoints[i].transform.position);
             _currentVikingsStack.Push(_currentViking);
-            if (_rewardedVikings.ContainsKey(_currentViking.Name) == false)
+            if (_rewardedVikings.ContainsKey(_currentViking.Name))
             {
-                _rewardedVikings.Add(_currentViking.Name, _churchPoints[i].GetComponent<ChurchPoint>().Name);
+                _rewardedVikings.Add(_currentViking.Name+i, churchPoints[i].GetComponent<ChurchPoint>().Name);
             }
             else
             {
-                _rewardedVikings.Add(_currentViking.Name + i.ToString(), _churchPoints[i].GetComponent<ChurchPoint>().Name);
+                _rewardedVikings.Add(_currentViking.Name, churchPoints[i].GetComponent<ChurchPoint>().Name);
             }
             await UniTask.Delay(_waitTime);
+            Destroy(churchPoints[i]);
+            Instantiate(churchPoints[i], _currentViking.transform);
+            churchPoints[i].transform.localPosition = new Vector3(0, 5, 0);
         }
-       
     }
 
 
@@ -192,14 +148,13 @@ public class Level : MonoBehaviour
 
     private async void MoveVikingsToGates()
     {
-
-        _currentVikings = (from viking in _currentVikings orderby (Vector3.Distance(viking.transform.position, _gates.transform.position)) select viking).ToList();
+        _currentVikings = (from viking in _currentVikings orderby (Vector3.Distance(viking.transform.position, gates.transform.position)) select viking).ToList();
 
         var sequence = DOTween.Sequence();
         for (int i = 0; i < _currentVikings.Count; i++)
         {
             _currentViking = _currentVikings[i].GetComponent<Viking>();
-            _currentViking.MoveToPoint(_gates.transform.position);
+            _currentViking.MoveToPoint(gates.transform.position);
             await UniTask.Delay(_waitTime);
         }
         GatesMethodCounter++;
@@ -212,9 +167,9 @@ public class Level : MonoBehaviour
         for (int i = 0; i < _currentVikingsStack.Count; i++)
         {
             _currentVikingStack = _currentVikingsStack.Pop();
-            _currentVikingStack.MoveToPoint(_vikingSpawn.transform.position);
+            _currentVikingStack.MoveToPoint(vikingSpawn.transform.position);
             await UniTask.Delay(_waitTime);
-            
+            print("ÈÄÓÒ Îáðàòíî");
         }
     }
 

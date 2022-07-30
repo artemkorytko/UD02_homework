@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] Level _level;
+    [SerializeField] Level level;
     private void Awake()
     {
         StartLevel();
@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     private void StartLevel()
     {
-        _level = Instantiate(_level.gameObject).GetComponent<Level>();
+        level = Instantiate(level.gameObject).GetComponent<Level>();
     }
 
 }
