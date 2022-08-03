@@ -1,56 +1,42 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
 
 public class Viking : MonoBehaviour
 {
-    public string Name;
-    private Rigidbody _rb;
-    private readonly int _walkSpeed = 20;     //readonly))
-
-
-    private void Awake()
-    {
-        _rb = GetComponent<Rigidbody>();
-    }
-
-
-    private bool _onFigntPoint = false;
+    public string vikingName;
+    private int _walkSpeed = 20;     //readonly))
+    private bool _onFigntPoint;
     public bool OnFightPoint => _onFigntPoint;
- 
-
-
+    
     private bool _onPoint = false;
     public bool OnPoint => _onPoint;
-
-
-
-    private bool _onGates = false;
+    
+    private bool _onGates;
     public bool OnGates => _onGates;
     
-
-    private bool _onChurchPoint = false;
+    private bool _onChurchPoint;
     public bool OnChurchPoint => _onChurchPoint;
     
+    
 
-
-    private void OnTriggerEnter(Collider collider)
+    private void OnTriggerEnter(Collider CollisionCollider)
     {
-        if (collider.gameObject.TryGetComponent<FightPoint>(out FightPoint fightpoint))
+        if (CollisionCollider.gameObject.TryGetComponent<FightPoint>(out FightPoint fightpoint))
         {
             _onFigntPoint = true;
         }
-        if (collider.gameObject.TryGetComponent<Gates>(out Gates gates))
+        if (CollisionCollider.gameObject.TryGetComponent<Gates>(out Gates gates))
         {
             _onGates = true;
         }
-        if (collider.gameObject.TryGetComponent<ChurchPoint>(out ChurchPoint point))
+        if (CollisionCollider.gameObject.TryGetComponent<ChurchPoint>(out ChurchPoint point))
         {
             _onChurchPoint = true;
         }
     }
+    
+    
     private void OnTriggerExit(Collider collider)
     {
         if (collider.gameObject.TryGetComponent<FightPoint>(out FightPoint fightpoint))

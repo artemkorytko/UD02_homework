@@ -31,9 +31,9 @@ public class Level : MonoBehaviour
 
 
 
-    private void Awake()
+    private void Start()
     {
-        SpawnOneVikingAndMatchPoint();
+        InitializeViking();
         _currentViking.MoveToPoint(_currentFightPoint.gameObject.transform.position);
     }
 
@@ -44,10 +44,10 @@ public class Level : MonoBehaviour
         {
             if (fightPoints.Count > 0)
             {
-                SpawnOneVikingAndMatchPoint();
+                InitializeViking();
                 _currentViking.MoveToPoint(_currentFightPoint.gameObject.transform.position);
             }
-            else if (_corutGatesStarted == true)  //чтобы запустить только один раз
+            else if (_corutGatesStarted == true)  //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
             {
                 MoveVikingsToGates();
                 _corutGatesStarted = false;
@@ -102,15 +102,14 @@ public class Level : MonoBehaviour
         return indicator;
     }
 
-    private int _vikingTitleIndex = 0;
-    public void SpawnOneVikingAndMatchPoint()
+    public void InitializeViking()
     {
-        int _vikingIndex = UnityEngine.Random.Range(0, vikings.Count);
-        _currentViking = Instantiate(vikings[_vikingIndex]).GetComponentInChildren<Viking>();
+        int vikingIndex = UnityEngine.Random.Range(0, vikings.Count);
+        _currentViking = Instantiate(vikings[vikingIndex]).GetComponentInChildren<Viking>();
         _currentVikings.Add(_currentViking.gameObject);
         _currentViking.transform.parent.position = vikingSpawn.transform.position;
-        int _fightPointIndex = UnityEngine.Random.Range(0, fightPoints.Count);
-        _currentFightPoint = fightPoints[_fightPointIndex];
+        int fightPointIndex = UnityEngine.Random.Range(0, fightPoints.Count);
+        _currentFightPoint = fightPoints[fightPointIndex];
         fightPoints.Remove(_currentFightPoint);
     }
 
@@ -123,13 +122,13 @@ public class Level : MonoBehaviour
             _currentViking = _currentVikings[i].GetComponent<Viking>();
             _currentViking.MoveToPoint(churchPoints[i].transform.position);
             _currentVikingsStack.Push(_currentViking);
-            if (_rewardedVikings.ContainsKey(_currentViking.Name))
+            if (_rewardedVikings.ContainsKey(_currentViking.name))
             {
-                _rewardedVikings.Add(_currentViking.Name+i, churchPoints[i].GetComponent<ChurchPoint>().Name);
+                _rewardedVikings.Add(_currentViking.name+i, churchPoints[i].GetComponent<ChurchPoint>().Name);
             }
             else
             {
-                _rewardedVikings.Add(_currentViking.Name, churchPoints[i].GetComponent<ChurchPoint>().Name);
+                _rewardedVikings.Add(_currentViking.name, churchPoints[i].GetComponent<ChurchPoint>().Name);
             }
             await UniTask.Delay(_waitTime);
             Destroy(churchPoints[i]);
@@ -169,7 +168,7 @@ public class Level : MonoBehaviour
             _currentVikingStack = _currentVikingsStack.Pop();
             _currentVikingStack.MoveToPoint(vikingSpawn.transform.position);
             await UniTask.Delay(_waitTime);
-            print("ИДУТ Обратно");
+            print("пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
         }
     }
 

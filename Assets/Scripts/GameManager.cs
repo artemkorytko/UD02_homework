@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] Level level;
-    private void Awake()
+    private void Start()
     {
         StartLevel();
     }
