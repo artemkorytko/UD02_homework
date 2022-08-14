@@ -1,5 +1,5 @@
 ﻿
-public class DefendPointsSpawner : PointsSpawner, IDefendPoints
+public class DefendPointsSpawner : PointsSpawner
 {
 
 }

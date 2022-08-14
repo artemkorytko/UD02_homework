@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
         _currentPanel.SetActive(true);
     }
     
-    private void DisableCurrentPanel()
+    public void DisableCurrentPanel()
     {
         if (_currentPanel == null) return;
         

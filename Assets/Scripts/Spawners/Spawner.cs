@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
 
 public abstract class Spawner : MonoBehaviour
 {
@@ -9,7 +8,9 @@ public abstract class Spawner : MonoBehaviour
     protected Pool _pool;
     protected ISpawnPoint _spawnPoint;
 
-    public async UniTask StartSpawn(int objectsCount)
+    public Transform SpawnPoint => _spawnPoint.GetPoint();
+
+    public void StartSpawn(int objectsCount)
     {
         _pool = GetComponentInChildren<Pool>();
         _spawnPoint = GetComponentInChildren<ISpawnPoint>();
@@ -31,8 +32,8 @@ public abstract class Spawner : MonoBehaviour
 
         _pool.Initialize();
 
-        await CreatingObjects(objectsCount);
+        CreatingObjects(objectsCount);
     }
 
-    protected abstract UniTask CreatingObjects(int objectsCount);
+    protected abstract void CreatingObjects(int objectsCount);
 }

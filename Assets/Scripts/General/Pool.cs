@@ -7,40 +7,40 @@ public class Pool : MonoBehaviour
     [SerializeField] private GameObject[] _prefabs = null;
 
     private Queue<GameObject> _objects = new Queue<GameObject>();
-    private int _startCount = 10;
-    private int _resizeCount = 5;
+    private const int START_COUNT = 10;
+    private const int RESIZE_COUNT = 5;
 
     public void Initialize()
     {
-        AddingObjects(_startCount);
+        AddingObjects(START_COUNT);
     }
 
     public GameObject GetObject(Transform parent)
     {
         if (_objects.Count == 0)
         {
-            AddingObjects(_resizeCount);
+            AddingObjects(RESIZE_COUNT);
         }
 
-        GameObject received = _objects.Dequeue();
-        received.transform.SetParent(parent);
-        received.SetActive(true);
+        var givenOut = _objects.Dequeue();
+        givenOut.transform.SetParent(parent);
+        givenOut.SetActive(true);
 
-        return received;
+        return givenOut;
     }
 
     public void ReturnObject(GameObject returned)
     {
         returned.SetActive(false);
-        returned.transform.SetParent(this.gameObject.transform);
+        returned.transform.SetParent(gameObject.transform);
         _objects.Enqueue(returned);
     }
 
     private void AddingObjects(int size)
     {
-        int prefabIndex = 0;
+        var prefabIndex = 0;
 
-        for (int i = 0; i < size; i++)
+        for (var i = 0; i < size; i++)
         {
             if (_prefabs.Length > 1)
             {
@@ -52,7 +52,7 @@ public class Pool : MonoBehaviour
                 throw new NullReferenceException();
             }
 
-            GameObject prefab = Instantiate(_prefabs[prefabIndex], transform);
+            var prefab = Instantiate(_prefabs[prefabIndex], transform);
             prefab.SetActive(false);
             _objects.Enqueue(prefab);
         }

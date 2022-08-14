@@ -5,25 +5,28 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     private Stack<Viking> _vikingsStack = new Stack<Viking>();
-    private List<Reward> _rewards = new List<Reward>();
+    private List<RewardComponent> _rewards = new List<RewardComponent>();
     private int _vikingsCount;
 
-    public void Initialize(int count)
+    public void SetRewardsList(int count)
     {
         var doorPosition = transform.position;
         _vikingsCount = count;
-        _rewards.AddRange(GetComponentsInChildren<Reward>());
+        _rewards.AddRange(GetComponentsInChildren<RewardComponent>());
 
-        for (int i = 0; i < _vikingsCount - 1; i++)
+        if (_rewards.Count == 0)
         {
-            for (int j = i + 1; j > _vikingsCount; j++)
+            throw new ArgumentNullException(nameof(_rewards.Count));
+        }
+
+        for (var i = 0; i < _vikingsCount - 1; i++)
+        {
+            for (var j = i + 1; j > _vikingsCount; j++)
             {
                 if ((_rewards[i].gameObject.transform.position - doorPosition).sqrMagnitude >
                     (_rewards[j].gameObject.transform.position - doorPosition).sqrMagnitude)
                 {
-                    var reward = _rewards[i];
-                    _rewards[i] = _rewards[j];
-                    _rewards[j] = reward;
+                    (_rewards[i], _rewards[j]) = (_rewards[j], _rewards[i]);
                 }
             }
         }
@@ -33,13 +36,28 @@ public class Door : MonoBehaviour
     {
         if (_rewards.Count > 0)
         {
-            Vector3 point = _rewards[0].transform.position;
+            var point = _rewards[0].transform.position;
             _rewards.RemoveAt(0);
             return point;
         }
         else
         {
             throw new ArgumentNullException(nameof(_rewards.Count));
+        }
+    }
+    
+    public void GetPoint(RewardComponent rewardComponent)
+    {
+        if (_rewards.Count > 0)
+        {
+            foreach (var reward in _rewards)
+            {
+                if (rewardComponent.gameObject.transform.position == reward.transform.position)
+                {
+                    _rewards.Remove(reward);
+                    break;
+                }
+            }
         }
     }
 

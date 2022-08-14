@@ -1,5 +1,5 @@
 
-public class RewardSpawner : PointsSpawner, IRewardPoints
+public class RewardSpawner : PointsSpawner
 {
 
 }

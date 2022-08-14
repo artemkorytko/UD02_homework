@@ -1,37 +1,29 @@
 using System;
-using UnityEngine;
-using Cysharp.Threading.Tasks;
 
 public class WarriorsSpawner : Spawner
 {
-    private IPoints _points = null;
+    private IPoints _startPoints = null;
 
-    public void Initialize(IPoints points)
+    public void SetSpawnPoints(IPoints startPoints)
     {
-        _points = points;
+        _startPoints = startPoints;
     }
-    protected override async UniTask CreatingObjects(int objectsCount)
+    
+    protected override void CreatingObjects(int objectsCount)
     {
-        if (_points == null)
+        if (_startPoints == null)
         {
-            throw new Exception(nameof(IPoints) + "is not initialized");
+            throw new Exception(nameof(IPoints) + " is not initialized");
         }
 
-        for (int i = 0; i < objectsCount; i++)
+        for (var i = 0; i < objectsCount; i++)
         {
-            GameObject created = _pool.GetObject(_objectsParent.transform);
-            created.transform.position = _spawnPoint.GetPoint().position;
+            var created = _pool.GetObject(_objectsParent.transform);
+            created.transform.position = _startPoints.ReadPoint();
 
-            if (created.TryGetComponent(out Viking viking))
+            if (created.TryGetComponent(out IPoolInitializable pooled))
             {
-                viking.Initialize(_pool);
-                await viking.StartMove(_points.GetPoint());
-            }
-
-            if (created.TryGetComponent(out Enemy enemy))
-            {
-                enemy.Initialize(_pool);
-                await enemy.StartMove(_points.ReadPoint());
+                pooled.PoolInitialize(_pool);
             }
         }
     }

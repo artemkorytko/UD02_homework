@@ -3,15 +3,19 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 
 [RequireComponent(typeof(Movable))]
-public abstract class Warrior : MonoBehaviour
+public abstract class Warrior : MonoBehaviour, IPoolInitializable
 {
     protected Movable _movable;
     private Pool _pool;
 
-    public void Initialize(Pool pool)
+    private void Awake()
+    {
+        _movable = GetComponent<Movable>();
+    }
+
+    public void PoolInitialize(Pool pool)
     {
         _pool = pool;
-        _movable = GetComponent<Movable>();
     }
 
     public async UniTask StartMove(Vector3 point)
