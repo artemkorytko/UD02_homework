@@ -3,17 +3,15 @@ using UnityEngine;
 
 public abstract class Spawner : MonoBehaviour
 {
-    [SerializeField] protected Transform _objectsParent;
-
+    protected Transform _objectsParent;
     protected Pool _pool;
     protected ISpawnPoint _spawnPoint;
 
-    public Transform SpawnPoint => _spawnPoint.GetPoint();
-
-    public void StartSpawn(int objectsCount)
+    private void Awake()
     {
-        _pool = GetComponentInChildren<Pool>();
-        _spawnPoint = GetComponentInChildren<ISpawnPoint>();
+        _objectsParent = GetComponentInChildren<ObjectsParentComponent>(true).transform;
+        _pool = GetComponentInChildren<Pool>(true);
+        _spawnPoint = GetComponentInChildren<ISpawnPoint>(true);
 
         if (_pool == null)
         {
@@ -27,9 +25,12 @@ public abstract class Spawner : MonoBehaviour
 
         if (_objectsParent == null)
         {
-            throw new NullReferenceException(nameof(_objectsParent));
+            throw new NullReferenceException(nameof(ObjectsParentComponent));
         }
-
+    }
+    
+    public void StartSpawn(int objectsCount)
+    {
         _pool.Initialize();
 
         CreatingObjects(objectsCount);

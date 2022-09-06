@@ -4,15 +4,12 @@ using Cysharp.Threading.Tasks;
 
 public class VikingsSpawner : WarriorsSpawner
 {
-    [SerializeField] private Player player;
-    
     private const int START_MOVE_DELAY = 500;
     private const int WAIT_VIKINGS_MOVING_DELAY = 500;
     
     private Dictionary<Viking, RewardComponent> _rewards = new Dictionary<Viking, RewardComponent>();
     private readonly List<Viking> _vikings = new List<Viking>();
     
-    private Player _player;
     private Door _door;
     private Vector3 _doorPosition = Vector3.zero; 
     
@@ -27,13 +24,6 @@ public class VikingsSpawner : WarriorsSpawner
         {
             viking.OnRewarded += UpdateDictionary;
         }
-    }
-
-    public Player PlayerInstantiate()
-    {
-        _player = Instantiate(player.gameObject, transform).GetComponent<Player>();
-        _player.gameObject.transform.position = SpawnPoint.position;
-        return _player;
     }
 
     private void UpdateDictionary(Viking viking, RewardComponent reward)

@@ -4,15 +4,17 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float speed = 2f; 
+    [SerializeField] private float speed = 2f;
+
+    public event Action OnFinish;
     
-    public bool IsMoving { get; private set; } = false;
-    public bool IsFinished { get; private set; } = false;
+    public bool IsMoving { get; private set; }
+    public bool IsFinished { get; private set; }
+    public RewardComponent Reward { get; private set; }
 
     private Joystick _joystick;
     private Transform _transform;
     private Rigidbody _rigidbody;
-    private RewardComponent _reward;
     private bool _isCanMove;
     private bool _isRewarded;
 
@@ -79,14 +81,14 @@ public class Player : MonoBehaviour
             reward.gameObject.GetComponent<Collider>().enabled = false;
             _isRewarded = true;
             
-            _reward = reward;
+            Reward = reward;
         }
         else if (IsFinished == false)
         {
             if (other.gameObject.GetComponent<Ship>() == null) return;
 
             IsFinished = true;
-            DeactivateMoving();
+            OnFinish?.Invoke();
         }
     }
 }
