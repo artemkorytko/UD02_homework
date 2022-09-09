@@ -54,20 +54,20 @@ public class GameManager : MonoBehaviour
         
         /* PreStart - Wait start button clicked */
         camerasController.SetStartCamera();
-        uiManager.ShowStartPanel();
+        await uiManager.ShowStartPanel();
         await UniTask.WaitWhile(() => _isStarted == false);
         
         /* PreStart - Ship moving to start position */
-        uiManager.DisableCurrentPanel();
         camerasController.SetShipCamera();
+        await uiManager.DisableCurrentPanel();
         await ship.StartMove();
 
         /* PreStart - Vikings moving to start position */
         await vikingsSpawner.MoveToPoints(fightPointsSpawner);
         
         /* PreStart - Wait until player start moving */
-        uiManager.ShowGamePanel();
         camerasController.SetPlayerCamera();
+        await uiManager.ShowGamePanel();
         player.ActivateMoving();
         await UniTask.WaitWhile(() => player.IsMoving == false);
         
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
         await ship.EndMove();
         
         /* Ending - Score */
-        uiManager.ShowWinPanel(vikingsSpawner.Rewards, player.Reward);
+        await uiManager.ShowWinPanel(vikingsSpawner.Rewards, player.Reward);
     }
     
     private void OnDestroy()
@@ -95,10 +95,10 @@ public class GameManager : MonoBehaviour
         _isStarted = true;
     }
 
-    private void OnPlayerFinish()
+    private async void OnPlayerFinish()
     {
         player.DeactivateMoving();
-        camerasController.SetShipCamera();
-        uiManager.DisableCurrentPanel();
+        camerasController.SetEndCamera();
+        await uiManager.DisableCurrentPanel();
     }
 }

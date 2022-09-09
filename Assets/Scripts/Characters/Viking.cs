@@ -5,7 +5,7 @@ public class Viking : Warrior
 {
     public Action<Viking, RewardComponent> OnRewarded;
     public bool IsStacked;
-    
+
     private bool _isRewarded;
     
     private void OnTriggerEnter(Collider other)
@@ -16,10 +16,16 @@ public class Viking : Warrior
         }
         else if (other.gameObject.TryGetComponent(out RewardComponent reward) && _isRewarded == false)
         {
-            _isRewarded = true;
-            reward.gameObject.transform.SetParent(gameObject.transform);
-            reward.gameObject.GetComponent<Collider>().enabled = false;
+            var rewardGameObject = reward.gameObject;
+            Vector3 rewardPosition = GetComponentInChildren<RewardTransformComponent>().
+                                       gameObject.transform.position;
+
+            rewardGameObject.transform.SetParent(gameObject.transform);
+            rewardGameObject.GetComponent<Collider>().enabled = false;
+            rewardGameObject.transform.position = rewardPosition;
+            rewardGameObject.transform.rotation = Quaternion.Euler(Vector3.zero);
             OnRewarded?.Invoke(this, reward);
+            _isRewarded = true;
         }
     }
 }

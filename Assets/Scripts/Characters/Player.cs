@@ -77,8 +77,15 @@ public class Player : MonoBehaviour
 
             var door = FindObjectOfType<Door>();
             door.GetPoint(reward);
-            reward.gameObject.transform.SetParent(gameObject.transform);
-            reward.gameObject.GetComponent<Collider>().enabled = false;
+
+            var rewardGameObject = reward.gameObject;
+            Vector3 rewardPosition = GetComponentInChildren<RewardTransformComponent>().
+                                       gameObject.transform.position;
+
+            rewardGameObject.transform.SetParent(gameObject.transform);
+            rewardGameObject.GetComponent<Collider>().enabled = false;
+            rewardGameObject.transform.position = rewardPosition;
+            rewardGameObject.transform.rotation = Quaternion.Euler(Vector3.zero);
             _isRewarded = true;
             
             Reward = reward;

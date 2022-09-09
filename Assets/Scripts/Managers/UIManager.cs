@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 
 public class UIManager : MonoBehaviour
 {
@@ -9,48 +10,60 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject winPanel;
     [SerializeField] private Text rewardsText;
 
+    private UIEffects _effects;
     private GameObject _currentPanel;
 
-    private void EnableCurrentPanel()
+    private void Awake()
+    {
+        _effects = new UIEffects();
+    }
+    
+    private async UniTask EnableCurrentPanel()
     {
         if (_currentPanel == null) return;
         
         _currentPanel.SetActive(true);
+        await _effects.PanelFadeInEffect(_currentPanel);
     }
     
-    public void DisableCurrentPanel()
+    public async UniTask DisableCurrentPanel()
     {
         if (_currentPanel == null) return;
-        
+
+        await _effects.PanelFadeOutEffect(_currentPanel);
         _currentPanel.SetActive(false);
+        _currentPanel = null;
     }
 
-    private void ShowPanel(GameObject panel)
+    private async UniTask ShowPanel(GameObject panel)
     {
-        DisableCurrentPanel();
+        await DisableCurrentPanel();
         _currentPanel = panel;
-        EnableCurrentPanel();
+        await EnableCurrentPanel();
     }
 
-    public void ShowStartPanel()
+    public async UniTask ShowStartPanel()
     {
-        ShowPanel(startPanel);
+        await ShowPanel(startPanel);
     }
     
-    public void ShowGamePanel()
+    public async UniTask ShowGamePanel()
     {
-        ShowPanel(gamePanel);
+        await ShowPanel(gamePanel);
     }
     
-    public void ShowWinPanel(Dictionary<Viking, RewardComponent> rewards, RewardComponent playerReward)
+    public async UniTask ShowWinPanel(Dictionary<Viking, RewardComponent> rewards, RewardComponent playerReward)
     {
-        ShowPanel(winPanel);
+        await ShowPanel(winPanel);
         
-        rewardsText.text = "Player get " + playerReward.name + "\n";
+        var tempString = "REWARDS:\n";
+        tempString += $"Player get {playerReward.name}.\n";
         
         foreach (var viking in rewards)
         {
-            rewardsText.text += viking.Key.name + " get " + viking.Value + "\n";
+            tempString += $"{viking.Key.name} get {viking.Value}.\n";
         }
+
+        await _effects.TextEffect(rewardsText, tempString);
     }
 }
